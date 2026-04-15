@@ -31,6 +31,8 @@ export interface FullscreenCarouselItemProps {
     src: string;
     alt?: string | undefined;
     thumbnailSrc?: string | undefined;
+    fileName?: string | undefined;
+    fileSize?: string | undefined;
 }
 
 export interface ImageDimension {

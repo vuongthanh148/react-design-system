@@ -31,6 +31,9 @@ import {
     Chip,
     CloseButton,
     DeleteButton,
+    FileInfoFileName,
+    FileInfoFileSize,
+    FileInfoTextWrapper,
     FocusableImageRegion,
     ImageGalleryContainer,
     ImageGallerySlide,
@@ -87,6 +90,7 @@ export const Component = (
     const imageRef = useRef<HTMLDivElement>(null);
     const diff = startX && endX ? startX - endX : 0;
     const currentItem = items[currentSlide];
+    const hasFileInfo = items.some((item) => item.fileName || item.fileSize);
 
     const getImageAriaLabel = useCallback(
         (index: number) => {
@@ -316,6 +320,22 @@ export const Component = (
         );
     };
 
+    const renderFileInfo = () => {
+        const { fileName, fileSize } = currentItem ?? {};
+        const displayName = fileName || (fileSize ? "-" : undefined);
+
+        return (
+            <FileInfoTextWrapper>
+                {displayName && (
+                    <FileInfoFileName weight="semibold">
+                        {displayName}
+                    </FileInfoFileName>
+                )}
+                {fileSize && <FileInfoFileSize>{fileSize}</FileInfoFileSize>}
+            </FileInfoTextWrapper>
+        );
+    };
+
     const renderThumbnails = () => {
         return (
             <ThumbnailContainer
@@ -358,6 +378,44 @@ export const Component = (
             disableInitialFocus
         >
             <CarouselModalContent>
+                <TopActionButtons
+                    aria-live="polite"
+                    $hasFileInfo={hasFileInfo}
+                    $insetTop={insets?.top}
+                    $insetLeft={insets?.left}
+                    $insetRight={insets?.right}
+                >
+                    {hasFileInfo && renderFileInfo()}
+                    {!hideMagnifier && (
+                        <MagnifierButton
+                            aria-label={zoom === 1 ? "Zoom in" : "Zoom out"}
+                            onClick={handleMagnifier}
+                        >
+                            {zoom === 1 ? (
+                                <MagnifierPlusIcon aria-hidden />
+                            ) : (
+                                <MagnifierMinusIcon aria-hidden />
+                            )}
+                        </MagnifierButton>
+                    )}
+
+                    {onDelete && (
+                        <DeleteButton
+                            aria-label="Delete image"
+                            data-testid="delete-btn"
+                            onClick={handleDelete}
+                        >
+                            <BinIcon aria-hidden />
+                        </DeleteButton>
+                    )}
+
+                    <CloseButton
+                        aria-label="Close image carousel"
+                        onClick={onClose}
+                    >
+                        <CrossIcon aria-hidden />
+                    </CloseButton>
+                </TopActionButtons>
                 <ImageGalleryContainer>
                     <ImageGalleryWrapper>
                         <ImageGallerySwipe
@@ -405,41 +463,6 @@ export const Component = (
 
                     {!hideThumbnail && renderThumbnails()}
                 </ImageGalleryContainer>
-
-                <TopActionButtons
-                    $insetTop={insets?.top}
-                    $insetRight={insets?.right}
-                >
-                    {!hideMagnifier && (
-                        <MagnifierButton
-                            aria-label={zoom === 1 ? "Zoom in" : "Zoom out"}
-                            onClick={handleMagnifier}
-                        >
-                            {zoom === 1 ? (
-                                <MagnifierPlusIcon aria-hidden />
-                            ) : (
-                                <MagnifierMinusIcon aria-hidden />
-                            )}
-                        </MagnifierButton>
-                    )}
-
-                    {onDelete && (
-                        <DeleteButton
-                            aria-label="Delete image"
-                            data-testid="delete-btn"
-                            onClick={handleDelete}
-                        >
-                            <BinIcon aria-hidden />
-                        </DeleteButton>
-                    )}
-
-                    <CloseButton
-                        aria-label="Close image carousel"
-                        onClick={onClose}
-                    >
-                        <CrossIcon aria-hidden />
-                    </CloseButton>
-                </TopActionButtons>
             </CarouselModalContent>
         </ModalV2>
     );
