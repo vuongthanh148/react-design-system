@@ -168,6 +168,7 @@ export const CopyrightText = styled(Typography.BodyXS)`
 
 export const DisclaimerTextLink = styled(Typography.LinkXS)`
     color: ${ThemeFooter["footer-disclaimer-link-colour-text"]};
+    padding-block: 2px;
     &:not(:last-child) {
         margin-right: ${Spacing["spacing-16"]};
     }
